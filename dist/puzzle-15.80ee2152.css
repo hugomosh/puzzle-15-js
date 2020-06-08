@@ -1,0 +1,64 @@
+/* Array */
+body {
+  margin: 0px;
+  padding: 0px;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ff686bff;
+}
+
+rect.tile {
+  rx: 10;
+  ry: 10;
+  cursor: pointer;
+}
+rect.tile rect,
+rect.tile text {
+  cursor: pointer;
+}
+
+.even {
+  fill: #ffffffff;
+}
+
+.odd {
+  fill: #84dcc6ff;
+}
+
+.empty-tile {
+  cursor: grabbing;
+}
+.empty-tile rect,
+.empty-tile text {
+  cursor: grabbing;
+  fill: #a5ffd6ff;
+}
+
+svg text {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: pointer;
+}
+
+svg text::selection {
+  background: none;
+}
+
+text {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 2rem;
+  fill: #ffa69eff;
+}
+
+#puzzle-15 > svg {
+  border-radius: 10px;
+  fill: #a5ffd6ff;
+  background-color: #a5ffd6ff;
+}
+
+/*# sourceMappingURL=/puzzle-15.80ee2152.css.map */

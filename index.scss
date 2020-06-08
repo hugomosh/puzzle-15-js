@@ -1,0 +1,89 @@
+/* Array */
+$palette1: #05668dff, #028090ff, #00a896ff, #02c39aff, #f0f3bdff;
+$palette2: #264653ff, #2a9d8fff, #e9c46aff, #f4a261ff, #e76f51ff;
+$palette3: #fe938cff, #e6b89cff, #ead2acff, #9cafb7ff, #4281a4ff;
+$palette5: #ffffffff, #84dcc6ff, #a5ffd6ff, #ffa69eff, #ff686bff;
+$palette4: #ffadadff, #ffd6a5ff, #fdffb6ff, #caffbfff, #9bf6ffff, #a0c4ffff,
+  #bdb2ffff, #ffc6ffff, #fffffcff;
+
+$colorList: ();
+$newColorList: ();
+
+@function shuffle($list) {
+  $list-length: length($list);
+
+  @while ($list-length > 0) {
+    $rand: random($list-length);
+    $temp: nth($list, $rand);
+    $list: set-nth($list, $rand, nth($list, $list-length));
+    $list: set-nth($list, $list-length, $temp);
+    $list-length: $list-length - 1;
+  }
+
+  @return $list;
+}
+
+$colors: shuffle($palette5);
+
+$colorBg: nth($colors, 1) !default;
+$color1: nth($colors, 2) !default;
+$color2: nth($colors, 3) !default;
+$color3: nth($colors, 4) !default;
+$color4: nth($colors, 5) !default;
+
+body {
+  margin: 0px;
+  padding: 0px;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: $colorBg;
+}
+
+rect.tile {
+  rx: 10;
+  ry: 10;
+  cursor: pointer;
+  rect,
+  text {
+    cursor: pointer;
+  }
+}
+.even {
+  fill: $color1;
+}
+.odd {
+  fill: $color2;
+}
+.empty-tile {
+  cursor: grabbing;
+  rect,
+  text {
+    cursor: grabbing;
+    fill: $color3;
+  }
+}
+
+svg text {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: pointer;
+}
+svg text::selection {
+  background: none;
+}
+text {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 2rem;
+  fill: $color4;
+}
+
+#puzzle-15 > svg {
+  border-radius: 10px;
+  fill: $color3;
+  background-color: $color3;
+}
