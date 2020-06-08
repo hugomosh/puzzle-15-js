@@ -45,8 +45,6 @@ function calculateNextSteps(
       const nextR = row * m + ((indexOfPressedTile + i) % m);
       if (currentState[nextR] === 0) {
         const diff = indexOfPressedTile - nextR;
-
-        console.log("found x", nextR, diff);
         steps = repeat(
           diff < 0 ? DIRECTIONS["r"].id : DIRECTIONS["l"].id,
           Math.abs(diff)
@@ -59,7 +57,6 @@ function calculateNextSteps(
       for (let j = 1; j < n; j++) {
         const nextC = (indexOfPressedTile + j * n) % (m * n);
         if (currentState[nextC] === 0) {
-          console.log("found y", nextC, (indexOfPressedTile - nextC) / 4);
           const diff = (indexOfPressedTile - nextC) / 4;
           steps = repeat(
             diff < 0 ? DIRECTIONS["d"].id : DIRECTIONS["u"].id,
@@ -147,6 +144,7 @@ function createBoard() {
       .on("click", tilePressed(tileId));
     const rect = tile
       .rect(squareSize, squareSize)
+      .radius(10)
       .addClass("tile")
       .addClass((getX(i) + getY(i)) % 2 ? "odd" : "even");
     if (i + 1 === m * n) {
@@ -180,8 +178,6 @@ function animateToNewState(newState) {
     const currentTileId = board.currentState[index];
     const tile = board.tiles[currentTileId] as Svg;
     if (tile.data("tileId") !== newState[index]) {
-      console.log(tile.data("tileId"), newState[index], "in", index);
-
       board.tiles[newState[index]]
         .timeline(timeline)
         .animate(200, 0, "absolute")

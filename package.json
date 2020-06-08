@@ -4,11 +4,15 @@
   "description": "MVC of puzzle 15 game",
   "main": "index.ts",
   "scripts": {
-    "test": "parcel test"
+    "test": "parcel test",
+    "build": "parcel build index.html  --public-url ./",
+    "deploy": "npm run build && gh-pages -d dist"
   },
   "author": "HugoMosh",
   "license": "ISC",
   "devDependencies": {
+    "cssnano": "^4.1.10",
+    "gh-pages": "^3.0.0",
     "sass": "^1.26.8",
     "typescript": "^3.9.5"
   },

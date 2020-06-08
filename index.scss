@@ -23,7 +23,7 @@ $newColorList: ();
   @return $list;
 }
 
-$colors: shuffle($palette5);
+$colors: shuffle($palette1);
 
 $colorBg: nth($colors, 1) !default;
 $color1: nth($colors, 2) !default;
@@ -31,7 +31,12 @@ $color2: nth($colors, 3) !default;
 $color3: nth($colors, 4) !default;
 $color4: nth($colors, 5) !default;
 
+html,
 body {
+  overflow-x: hidden;
+}
+body {
+  position: relative;
   margin: 0px;
   padding: 0px;
   width: 100vw;
@@ -43,6 +48,7 @@ body {
 }
 
 .tile {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   rx: 10;
   ry: 10;
   cursor: pointer;
