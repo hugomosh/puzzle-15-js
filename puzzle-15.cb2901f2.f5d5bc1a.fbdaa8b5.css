@@ -1,0 +1,6 @@
+body{margin:0;padding:0;width:100vw;height:100vh;display:flex;justify-content:center;align-items:center;background-color:#02c39a}.tile{-webkit-tap-highlight-color:rgba(0,0,0,0);rx:10;ry:10;z-index:10}.tile,.tile rect,.tile text{cursor:pointer}.even{fill:#028090}.odd{fill:#00a896}.empty-tile{cursor:grabbing;z-index:-1}.empty-tile rect,.empty-tile text{cursor:grabbing;fill:#05668d}svg text{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:pointer}svg text::selection{background:none}text{font-family:Arial,Helvetica,sans-serif;font-size:2rem;fill:#f0f3bd}#puzzle-15>svg{border-radius:10px;fill:#05668d;background-color:#05668d}
+
+
+
+
+/*# sourceMappingURL=/puzzle-15.cb2901f2.f5d5bc1a.fbdaa8b5.css.map */
