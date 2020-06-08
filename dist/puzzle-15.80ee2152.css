@@ -7,34 +7,36 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #ff686bff;
+  background-color: #ffffffff;
 }
 
-rect.tile {
+.tile {
   rx: 10;
   ry: 10;
   cursor: pointer;
+  z-index: 10;
 }
-rect.tile rect,
-rect.tile text {
+.tile rect,
+.tile text {
   cursor: pointer;
 }
 
 .even {
-  fill: #ffffffff;
+  fill: #84dcc6ff;
 }
 
 .odd {
-  fill: #84dcc6ff;
+  fill: #a5ffd6ff;
 }
 
 .empty-tile {
   cursor: grabbing;
+  z-index: -1;
 }
 .empty-tile rect,
 .empty-tile text {
   cursor: grabbing;
-  fill: #a5ffd6ff;
+  fill: #ffa69eff;
 }
 
 svg text {
@@ -52,13 +54,13 @@ svg text::selection {
 text {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 2rem;
-  fill: #ffa69eff;
+  fill: #ff686bff;
 }
 
 #puzzle-15 > svg {
   border-radius: 10px;
-  fill: #a5ffd6ff;
-  background-color: #a5ffd6ff;
+  fill: #ffa69eff;
+  background-color: #ffa69eff;
 }
 
 /*# sourceMappingURL=/puzzle-15.80ee2152.css.map */

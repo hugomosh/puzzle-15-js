@@ -11797,6 +11797,20 @@ makeMorphable();
 },{}],"index.ts":[function(require,module,exports) {
 "use strict";
 
+var __spreadArrays = this && this.__spreadArrays || function () {
+  for (var s = 0, i = 0, il = arguments.length; i < il; i++) {
+    s += arguments[i].length;
+  }
+
+  for (var r = Array(s), k = 0, i = 0; i < il; i++) {
+    for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++) {
+      r[k] = a[j];
+    }
+  }
+
+  return r;
+};
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -11844,10 +11858,105 @@ function getYforMN(m, n) {
   };
 }
 
+function repeat(elem, times) {
+  return Array(times).fill(elem);
+}
+
+function calculateNextSteps(_a, pressedTile) {
+  var currentState = _a.currentState,
+      m = _a.m,
+      n = _a.n,
+      getY = _a.getY;
+
+  if (pressedTile !== 0) {
+    var indexOfPressedTile = currentState.indexOf(pressedTile);
+    console.log(indexOfPressedTile);
+    var steps = []; //Check horizon axis
+
+    for (var i = 1; i < m; i++) {
+      var row = getY(indexOfPressedTile);
+      var nextR = row * m + (indexOfPressedTile + i) % m;
+
+      if (currentState[nextR] === 0) {
+        var diff = indexOfPressedTile - nextR;
+        console.log("found x", nextR, diff);
+        steps = repeat(diff < 0 ? DIRECTIONS["r"].id : DIRECTIONS["l"].id, Math.abs(diff));
+        continue;
+      }
+    }
+
+    if (!steps.length) {
+      //Check vertical axis
+      for (var j = 1; j < n; j++) {
+        var nextC = (indexOfPressedTile + j * n) % (m * n);
+
+        if (currentState[nextC] === 0) {
+          console.log("found y", nextC, (indexOfPressedTile - nextC) / 4);
+          var diff = (indexOfPressedTile - nextC) / 4;
+          steps = repeat(diff < 0 ? DIRECTIONS["d"].id : DIRECTIONS["u"].id, Math.abs(diff));
+          continue;
+        }
+      }
+    }
+  }
+
+  return steps;
+}
+
+function executeSteps(_a, steps) {
+  var currentState = _a.currentState;
+  var tempState = currentState;
+
+  for (var i = 0; i < steps.length; i++) {
+    tempState = executeStep(tempState, steps[i]);
+  }
+
+  return tempState;
+}
+
+function executeStep(currentState, step) {
+  var i0 = currentState.indexOf(0);
+
+  var newState = __spreadArrays(currentState);
+
+  var temp, newPosition;
+
+  switch (step) {
+    case DIRECTIONS["u"].id:
+      newPosition = i0 + 4;
+      break;
+
+    case DIRECTIONS["r"].id:
+      newPosition = i0 - 1;
+      break;
+
+    case DIRECTIONS["d"].id:
+      newPosition = i0 - 4;
+      break;
+
+    case DIRECTIONS["l"].id:
+      newPosition = i0 + 1;
+      break;
+
+    default:
+      break;
+  }
+
+  newState[i0] = newState[newPosition];
+  newState[newPosition] = 0;
+  return newState;
+}
+
 function tilePressed(index) {
   return function (e) {
     console.log("tile pressed", index, e);
-    animateToNewState([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0, 15]);
+    var newSteps = calculateNextSteps(board, index);
+    var newState = executeSteps(board, newSteps);
+    console.log({
+      newState: newState,
+      newSteps: newSteps
+    });
+    animateToNewState(newState);
   };
 }
 
@@ -11865,18 +11974,20 @@ function createBoard() {
     getY: getY,
     squareSize: squareSize,
     currentState: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0],
-    tiles: {}
+    tiles: {},
+    steps: []
   };
 
   for (var i = 0; i < board.currentState.length; i++) {
-    var tile = draw.nested().size(squareSize, squareSize).move(getX(i) * squareSize, getY(i) * squareSize).on("click", tilePressed(i));
+    var tileId = i === m * n - 1 ? 0 : i + 1;
+    var tile = draw.nested().size(squareSize, squareSize).move(getX(i) * squareSize, getY(i) * squareSize).on("click", tilePressed(tileId));
     var rect = tile.rect(squareSize, squareSize).addClass("tile").addClass((getX(i) + getY(i)) % 2 ? "odd" : "even");
 
     if (i + 1 === m * n) {
       tile.addClass("empty-tile");
+      tile.back();
     }
 
-    var tileId = i === m * n - 1 ? 0 : i + 1;
     tile.plain(String(tileId)).attr({
       x: "50%",
       y: "50%",
@@ -11908,11 +12019,12 @@ function animateToNewState(newState) {
 
     if (tile.data("tileId") !== newState[index]) {
       console.log(tile.data("tileId"), newState[index], "in", index);
-      board.tiles[newState[index]].timeline(timeline).animate(1000, 0, "absolute").move(board.getX(index) * board.squareSize, board.getY(index) * board.squareSize); //Move the the tile from newState to to new state (index)
+      board.tiles[newState[index]].timeline(timeline).animate(200, 0, "absolute").move(board.getX(index) * board.squareSize, board.getY(index) * board.squareSize); //Move the the tile from newState to to new state (index)
     }
   }
 
   timeline.play();
+  board.currentState = __spreadArrays(newState);
 }
 
 function moveCommand(direction, steps) {

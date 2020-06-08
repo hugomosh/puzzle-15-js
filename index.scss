@@ -42,7 +42,7 @@ body {
   background-color: $colorBg;
 }
 
-rect.tile {
+.tile {
   rx: 10;
   ry: 10;
   cursor: pointer;
@@ -50,6 +50,7 @@ rect.tile {
   text {
     cursor: pointer;
   }
+  z-index: 10;
 }
 .even {
   fill: $color1;
@@ -64,6 +65,7 @@ rect.tile {
     cursor: grabbing;
     fill: $color3;
   }
+  z-index: -1;
 }
 
 svg text {
