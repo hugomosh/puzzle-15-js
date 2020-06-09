@@ -23,7 +23,7 @@ $newColorList: ();
   @return $list;
 }
 
-$colors: shuffle($palette5);
+$colors: shuffle($palette1);
 
 $colorBg: nth($colors, 1) !default;
 $color1: nth($colors, 2) !default;

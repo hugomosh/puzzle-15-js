@@ -35,10 +35,10 @@ function calculateNextSteps(
   }: { currentState: number[]; m: number; n: number; getY: (a: number) => any },
   pressedTile: number
 ) {
+  let steps = [];
   if (pressedTile !== 0) {
     const indexOfPressedTile = currentState.indexOf(pressedTile);
     console.log(indexOfPressedTile);
-    let steps = [];
     //Check horizon axis
     for (let i = 1; i < m; i++) {
       const row = getY(indexOfPressedTile);
@@ -113,8 +113,10 @@ function tilePressed(index) {
     const newSteps = calculateNextSteps(board, index);
     const newState = executeSteps(board, newSteps);
     console.log({ newState, newSteps });
-
-    animateToNewState(newState);
+    animateToNewState(newState).play();
+    board.currentState = [...newState];
+    board.steps = [...board.steps, ...newSteps];
+    console.log(board.steps.map((s) => DIRECTIONS[s].emoji));
   };
 }
 
@@ -192,8 +194,8 @@ function animateToNewState(newState) {
       //Move the the tile from newState to to new state (index)
     }
   }
-  timeline.play();
-  board.currentState = [...newState];
+  //Return timeline to give control. .play is necessary
+  return timeline;
 }
 
 function moveCommand(direction, steps) {
