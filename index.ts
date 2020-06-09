@@ -148,7 +148,7 @@ function createBoard() {
     const rect = tile
       .rect(squareSize, squareSize)
       .addClass("tile")
-      .addClass((getX(i) + getY(i)) % 2 ? "odd" : "even");
+      .addClass(i % 2 ? "tile-a" : "tile-b");
     if (i + 1 === m * n) {
       tile.addClass("empty-tile");
       tile.back();
