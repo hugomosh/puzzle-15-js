@@ -1,17 +1,18 @@
 import { SVG, Timeline, Svg } from "@svgdotjs/svg.js";
-
+const IMPOSSIBLE = [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0];
 let currentState = [];
 const DIRECTIONS = {
-  u: { text: "up", id: "u", emoji: "⬆" },
-  r: { text: "right", id: "r", emoji: "⮕" },
-  d: { text: "down", id: "d", emoji: "⬇ " },
-  l: { text: "left", id: "l", emoji: "⬅" },
+  l: { text: "left", id: "l", emoji: "⬅", key: 37 },
+  u: { text: "up", id: "u", emoji: "⬆", key: 38 },
+  r: { text: "right", id: "r", emoji: "⮕", key: 39 },
+  d: { text: "down", id: "d", emoji: "⬇ ", key: 40 },
 };
 
 let board;
 
 function main() {
   board = createBoard();
+  addKeyboardListeners();
 }
 
 function getXforMN(m, n) {
@@ -74,11 +75,11 @@ function calculateNextSteps(
 }
 
 function executeSteps({ currentState }, steps) {
-  let tempState = currentState;
+  let newState = currentState;
   for (let i = 0; i < steps.length; i++) {
-    tempState = executeStep(tempState, steps[i]);
+    newState = executeStep(newState, steps[i]);
   }
-  return tempState;
+  return newState;
 }
 
 function executeStep(currentState, step) {
@@ -104,6 +105,9 @@ function executeStep(currentState, step) {
   }
   newState[i0] = newState[newPosition];
   newState[newPosition] = 0;
+  if (arraysEqual(newState, IMPOSSIBLE)) {
+    alert("You made the impossible, possible!!");
+  }
   return newState;
 }
 
@@ -214,4 +218,47 @@ function moveCommand(direction, steps) {
   }
 }
 
+function addKeyboardListeners() {
+  document.onkeydown = checkKey;
+}
+
+function checkKey(e) {
+  e = e || window.event;
+  let validDirection;
+  switch (e.keyCode) {
+    case DIRECTIONS["l"].key:
+      console.log(DIRECTIONS["l"].emoji);
+      validDirection = DIRECTIONS["l"];
+      break;
+    case DIRECTIONS["u"].key:
+      console.log(DIRECTIONS["u"].emoji);
+      validDirection = DIRECTIONS["u"];
+
+      break;
+    case DIRECTIONS["d"].key:
+      console.log(DIRECTIONS["d"].emoji);
+      validDirection = DIRECTIONS["d"];
+
+      break;
+    case DIRECTIONS["r"].key:
+      console.log(DIRECTIONS["r"].emoji);
+      validDirection = DIRECTIONS["r"];
+
+      break;
+
+    default:
+      break;
+  }
+  if (validDirection) {
+    //Todo:refactor to something more comprehensible and safe
+    const newState = executeStep(board.currentState, validDirection.id);
+    animateToNewState(newState).play();
+    board.currentState = [...newState];
+    board.steps = [...board.steps, validDirection.id];
+  }
+}
 main();
+
+function arraysEqual(a1, a2) {
+  return JSON.stringify(a1) == JSON.stringify(a2);
+}
