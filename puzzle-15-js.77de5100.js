@@ -11817,33 +11817,39 @@ Object.defineProperty(exports, "__esModule", {
 
 var svg_js_1 = require("@svgdotjs/svg.js");
 
+var IMPOSSIBLE = [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0];
 var currentState = [];
 var DIRECTIONS = {
+  l: {
+    text: "left",
+    id: "l",
+    emoji: "⬅",
+    key: 37
+  },
   u: {
     text: "up",
     id: "u",
-    emoji: "⬆"
+    emoji: "⬆",
+    key: 38
   },
   r: {
     text: "right",
     id: "r",
-    emoji: "⮕"
+    emoji: "⮕",
+    key: 39
   },
   d: {
     text: "down",
     id: "d",
-    emoji: "⬇ "
-  },
-  l: {
-    text: "left",
-    id: "l",
-    emoji: "⬅"
+    emoji: "⬇ ",
+    key: 40
   }
 };
 var board;
 
 function main() {
   board = createBoard();
+  addKeyboardListeners();
 }
 
 function getXforMN(m, n) {
@@ -11867,11 +11873,11 @@ function calculateNextSteps(_a, pressedTile) {
       m = _a.m,
       n = _a.n,
       getY = _a.getY;
+  var steps = [];
 
   if (pressedTile !== 0) {
     var indexOfPressedTile = currentState.indexOf(pressedTile);
-    console.log(indexOfPressedTile);
-    var steps = []; //Check horizon axis
+    console.log(indexOfPressedTile); //Check horizon axis
 
     for (var i = 1; i < m; i++) {
       var row = getY(indexOfPressedTile);
@@ -11879,6 +11885,7 @@ function calculateNextSteps(_a, pressedTile) {
 
       if (currentState[nextR] === 0) {
         var diff = indexOfPressedTile - nextR;
+        console.log("found x", nextR, diff);
         steps = repeat(diff < 0 ? DIRECTIONS["r"].id : DIRECTIONS["l"].id, Math.abs(diff));
         continue;
       }
@@ -11890,6 +11897,7 @@ function calculateNextSteps(_a, pressedTile) {
         var nextC = (indexOfPressedTile + j * n) % (m * n);
 
         if (currentState[nextC] === 0) {
+          console.log("found y", nextC, (indexOfPressedTile - nextC) / 4);
           var diff = (indexOfPressedTile - nextC) / 4;
           steps = repeat(diff < 0 ? DIRECTIONS["d"].id : DIRECTIONS["u"].id, Math.abs(diff));
           continue;
@@ -11903,13 +11911,13 @@ function calculateNextSteps(_a, pressedTile) {
 
 function executeSteps(_a, steps) {
   var currentState = _a.currentState;
-  var tempState = currentState;
+  var newState = currentState;
 
   for (var i = 0; i < steps.length; i++) {
-    tempState = executeStep(tempState, steps[i]);
+    newState = executeStep(newState, steps[i]);
   }
 
-  return tempState;
+  return newState;
 }
 
 function executeStep(currentState, step) {
@@ -11942,6 +11950,11 @@ function executeStep(currentState, step) {
 
   newState[i0] = newState[newPosition];
   newState[newPosition] = 0;
+
+  if (arraysEqual(newState, IMPOSSIBLE)) {
+    alert("You made the impossible, possible!!");
+  }
+
   return newState;
 }
 
@@ -11954,7 +11967,12 @@ function tilePressed(index) {
       newState: newState,
       newSteps: newSteps
     });
-    animateToNewState(newState);
+    animateToNewState(newState).play();
+    board.currentState = __spreadArrays(newState);
+    board.steps = __spreadArrays(board.steps, newSteps);
+    console.log(board.steps.map(function (s) {
+      return DIRECTIONS[s].emoji;
+    }));
   };
 }
 
@@ -11979,7 +11997,7 @@ function createBoard() {
   for (var i = 0; i < board.currentState.length; i++) {
     var tileId = i === m * n - 1 ? 0 : i + 1;
     var tile = draw.nested().size(squareSize, squareSize).move(getX(i) * squareSize, getY(i) * squareSize).on("click", tilePressed(tileId));
-    var rect = tile.rect(squareSize, squareSize).radius(10).addClass("tile").addClass((getX(i) + getY(i)) % 2 ? "odd" : "even");
+    var rect = tile.rect(squareSize, squareSize).addClass("tile").addClass(i % 2 ? "tile-a" : "tile-b");
 
     if (i + 1 === m * n) {
       tile.addClass("empty-tile");
@@ -12016,12 +12034,13 @@ function animateToNewState(newState) {
     var tile = board.tiles[currentTileId];
 
     if (tile.data("tileId") !== newState[index]) {
+      console.log(tile.data("tileId"), newState[index], "in", index);
       board.tiles[newState[index]].timeline(timeline).animate(200, 0, "absolute").move(board.getX(index) * board.squareSize, board.getY(index) * board.squareSize); //Move the the tile from newState to to new state (index)
     }
-  }
+  } //Return timeline to give control. .play is necessary
 
-  timeline.play();
-  board.currentState = __spreadArrays(newState);
+
+  return timeline;
 }
 
 function moveCommand(direction, steps) {
@@ -12043,8 +12062,54 @@ function moveCommand(direction, steps) {
   }
 }
 
+function addKeyboardListeners() {
+  document.onkeydown = checkKey;
+}
+
+function checkKey(e) {
+  e = e || window.event;
+  var validDirection;
+
+  switch (e.keyCode) {
+    case DIRECTIONS["l"].key:
+      console.log(DIRECTIONS["l"].emoji);
+      validDirection = DIRECTIONS["l"];
+      break;
+
+    case DIRECTIONS["u"].key:
+      console.log(DIRECTIONS["u"].emoji);
+      validDirection = DIRECTIONS["u"];
+      break;
+
+    case DIRECTIONS["d"].key:
+      console.log(DIRECTIONS["d"].emoji);
+      validDirection = DIRECTIONS["d"];
+      break;
+
+    case DIRECTIONS["r"].key:
+      console.log(DIRECTIONS["r"].emoji);
+      validDirection = DIRECTIONS["r"];
+      break;
+
+    default:
+      break;
+  }
+
+  if (validDirection) {
+    //Todo:refactor to something more comprehensible and safe
+    var newState = executeStep(board.currentState, validDirection.id);
+    animateToNewState(newState).play();
+    board.currentState = __spreadArrays(newState);
+    board.steps = __spreadArrays(board.steps, [validDirection.id]);
+  }
+}
+
 main();
-},{"@svgdotjs/svg.js":"node_modules/@svgdotjs/svg.js/dist/svg.esm.js"}],"../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+
+function arraysEqual(a1, a2) {
+  return JSON.stringify(a1) == JSON.stringify(a2);
+}
+},{"@svgdotjs/svg.js":"node_modules/@svgdotjs/svg.js/dist/svg.esm.js"}],"../../.nvm/versions/node/v10.16.3/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -12072,7 +12137,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52294" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49992" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
@@ -12248,5 +12313,5 @@ function hmrAcceptRun(bundle, id) {
     return true;
   }
 }
-},{}]},{},["../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","index.ts"], null)
-//# sourceMappingURL=/puzzle-15.77de5100.js.map
+},{}]},{},["../../.nvm/versions/node/v10.16.3/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","index.ts"], null)
+//# sourceMappingURL=/puzzle-15-js.77de5100.js.map

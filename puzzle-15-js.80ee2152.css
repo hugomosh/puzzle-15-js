@@ -11,7 +11,6 @@ body {
 }
 
 .tile {
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   rx: 10;
   ry: 10;
   cursor: pointer;
@@ -22,11 +21,11 @@ body {
   cursor: pointer;
 }
 
-.even {
-  fill: #02c39aff;
+.tile-a {
+  fill: #05668dff;
 }
 
-.odd {
+.tile-b {
   fill: #f0f3bdff;
 }
 
@@ -37,7 +36,7 @@ body {
 .empty-tile rect,
 .empty-tile text {
   cursor: grabbing;
-  fill: #05668dff;
+  fill: #02c39aff;
 }
 
 svg text {
@@ -60,8 +59,8 @@ text {
 
 #puzzle-15 > svg {
   border-radius: 10px;
-  fill: #05668dff;
-  background-color: #05668dff;
+  fill: #02c39aff;
+  background-color: #02c39aff;
 }
 
-/*# sourceMappingURL=/puzzle-15.80ee2152.css.map */
+/*# sourceMappingURL=/puzzle-15-js.80ee2152.css.map */
