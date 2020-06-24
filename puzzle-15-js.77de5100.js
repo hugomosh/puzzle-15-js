@@ -11818,6 +11818,7 @@ Object.defineProperty(exports, "__esModule", {
 var svg_js_1 = require("@svgdotjs/svg.js");
 
 var IMPOSSIBLE = [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0];
+var GOAL_ORDINAL = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0, 15];
 var currentState = [];
 var DIRECTIONS = {
   l: {
@@ -11846,11 +11847,6 @@ var DIRECTIONS = {
   }
 };
 var board;
-
-function main() {
-  board = createBoard();
-  addKeyboardListeners();
-}
 
 function getXforMN(m, n) {
   return function (index) {
@@ -11885,7 +11881,6 @@ function calculateNextSteps(_a, pressedTile) {
 
       if (currentState[nextR] === 0) {
         var diff = indexOfPressedTile - nextR;
-        console.log("found x", nextR, diff);
         steps = repeat(diff < 0 ? DIRECTIONS["r"].id : DIRECTIONS["l"].id, Math.abs(diff));
         continue;
       }
@@ -11897,7 +11892,6 @@ function calculateNextSteps(_a, pressedTile) {
         var nextC = (indexOfPressedTile + j * n) % (m * n);
 
         if (currentState[nextC] === 0) {
-          console.log("found y", nextC, (indexOfPressedTile - nextC) / 4);
           var diff = (indexOfPressedTile - nextC) / 4;
           steps = repeat(diff < 0 ? DIRECTIONS["d"].id : DIRECTIONS["u"].id, Math.abs(diff));
           continue;
@@ -11960,7 +11954,6 @@ function executeStep(currentState, step) {
 
 function tilePressed(index) {
   return function (e) {
-    console.log("tile pressed", index, e);
     var newSteps = calculateNextSteps(board, index);
     var newState = executeSteps(board, newSteps);
     console.log({
@@ -11997,7 +11990,7 @@ function createBoard() {
   for (var i = 0; i < board.currentState.length; i++) {
     var tileId = i === m * n - 1 ? 0 : i + 1;
     var tile = draw.nested().size(squareSize, squareSize).move(getX(i) * squareSize, getY(i) * squareSize).on("click", tilePressed(tileId));
-    var rect = tile.rect(squareSize, squareSize).addClass("tile").addClass(i % 2 ? "tile-a" : "tile-b");
+    var rect = tile.rect(squareSize, squareSize).radius(10).addClass("tile").addClass(i % 2 ? "tile-a" : "tile-b");
 
     if (i + 1 === m * n) {
       tile.addClass("empty-tile");
@@ -12034,7 +12027,6 @@ function animateToNewState(newState) {
     var tile = board.tiles[currentTileId];
 
     if (tile.data("tileId") !== newState[index]) {
-      console.log(tile.data("tileId"), newState[index], "in", index);
       board.tiles[newState[index]].timeline(timeline).animate(200, 0, "absolute").move(board.getX(index) * board.squareSize, board.getY(index) * board.squareSize); //Move the the tile from newState to to new state (index)
     }
   } //Return timeline to give control. .play is necessary
@@ -12104,11 +12096,105 @@ function checkKey(e) {
   }
 }
 
-main();
-
 function arraysEqual(a1, a2) {
   return JSON.stringify(a1) == JSON.stringify(a2);
 }
+
+function getValidShuffle(currentState) {
+  if (currentState === void 0) {
+    currentState = GOAL_ORDINAL;
+  }
+
+  var newState = randomSwap(randomSwap(currentState));
+  console.log({
+    newState: newState
+  });
+  var originalSolvability = isSolvableToOriginal(currentState);
+
+  while (isSolvableToOriginal(newState) !== originalSolvability) {
+    newState = randomSwap(currentState);
+    console.log({
+      newState: newState
+    });
+  }
+
+  return newState;
+}
+/* New array with random swapped elements. */
+
+
+function randomSwap(arr) {
+  var a = getRandomInt(0, arr.length);
+  var b = a;
+
+  while (b === a) {
+    b = getRandomInt(0, arr.length);
+  }
+
+  var newArr = __spreadArrays(arr);
+
+  newArr[a] = newArr[b];
+  newArr[b] = arr[a];
+  return newArr;
+}
+
+function calculateHeuristic(objectiveState, currentState) {
+  var h = 0;
+  currentState.forEach(function (e, i) {});
+  return h;
+}
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
+function prepareShuffleControl() {
+  document.getElementById("shuffle").addEventListener("click", function () {
+    console.log("Shuffle");
+    var newState = getValidShuffle(board.currentState);
+    animateToNewState(newState).play();
+    board.currentState = newState;
+  }, false);
+}
+
+function getInversionCount(state) {
+  //TODO: find O(nLogn) solution
+  var count = 0;
+
+  for (var i = 0; i < state.length - 1; i++) {
+    var ti = state[i];
+
+    for (var j = i + 1; j < state.length; j++) {
+      var tj = state[j];
+
+      if (ti && tj && ti > tj) {
+        count++;
+      }
+    }
+  }
+
+  return count;
+}
+
+function isSolvableToOriginal(state) {
+  var inversionCount = getInversionCount(state); // As puzzle15 is 4x4, the pos of the empty cell matters.
+
+  var zeroTilePosition = state.indexOf(0); // xor
+
+  return !!(Math.floor(zeroTilePosition / 4) & 1 ^ inversionCount & 1);
+}
+
+function main() {
+  board = createBoard();
+  addKeyboardListeners();
+  prepareShuffleControl();
+  console.log({
+    getValidShuffle: getValidShuffle,
+    calculateHeuristic: calculateHeuristic
+  });
+}
+
+main();
 },{"@svgdotjs/svg.js":"node_modules/@svgdotjs/svg.js/dist/svg.esm.js"}],"../../.nvm/versions/node/v10.16.3/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -12137,7 +12223,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49992" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62165" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

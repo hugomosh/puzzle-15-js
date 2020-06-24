@@ -1,5 +1,12 @@
 /* Array */
+html,
 body {
+  overflow-x: hidden;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  position: relative;
   margin: 0px;
   padding: 0px;
   width: 100vw;
@@ -7,10 +14,11 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #028090ff;
+  background-color: #05668dff;
 }
 
 .tile {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   rx: 10;
   ry: 10;
   cursor: pointer;
@@ -22,11 +30,11 @@ body {
 }
 
 .tile-a {
-  fill: #05668dff;
+  fill: #f0f3bdff;
 }
 
 .tile-b {
-  fill: #f0f3bdff;
+  fill: #00a896ff;
 }
 
 .empty-tile {
@@ -36,7 +44,7 @@ body {
 .empty-tile rect,
 .empty-tile text {
   cursor: grabbing;
-  fill: #02c39aff;
+  fill: #028090ff;
 }
 
 svg text {
@@ -54,13 +62,35 @@ svg text::selection {
 text {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 2rem;
-  fill: #00a896ff;
+  fill: #02c39aff;
 }
 
 #puzzle-15 > svg {
   border-radius: 10px;
-  fill: #02c39aff;
-  background-color: #02c39aff;
+  fill: #028090ff;
+  background-color: #028090ff;
+}
+
+#controls {
+  position: absolute;
+  bottom: 30px;
+}
+
+button {
+  border-radius: 10px;
+  background-color: #028090ff;
+  min-height: 70px;
+  min-width: 140px;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  font-size: 2rem;
+}
+button:hover {
+  background: #02c39aff;
+}
+button:active {
+  background: #f0f3bdff;
 }
 
 /*# sourceMappingURL=/puzzle-15-js.80ee2152.css.map */
