@@ -9,6 +9,7 @@ $palette4: #ffadadff, #ffd6a5ff, #fdffb6ff, #caffbfff, #9bf6ffff, #a0c4ffff,
 $colorList: ();
 $newColorList: ();
 
+$font-family: Arial, Helvetica, sans-serif;
 @function shuffle($list) {
   $list-length: length($list);
 
@@ -34,6 +35,7 @@ $color4: nth($colors, 5) !default;
 html,
 body {
   overflow-x: hidden;
+  font-family: $font-family;
 }
 body {
   position: relative;
@@ -85,7 +87,7 @@ svg text::selection {
   background: none;
 }
 text {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: $font-family;
   font-size: 2rem;
   fill: $color4;
 }
@@ -94,4 +96,28 @@ text {
   border-radius: 10px;
   fill: $color3;
   background-color: $color3;
+}
+
+#controls{
+  position: absolute;
+  bottom: 30px;
+}
+
+button{
+  border-radius: 10px;
+  background-color: $color3;
+  min-height: 70px;
+  min-width: 70*2px;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  font-size: 2rem;
+  &:hover  {
+    background:  $color4;
+ 
+  }
+  &:active{
+    background:  $color1;
+ 
+  }
 }

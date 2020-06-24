@@ -1,5 +1,7 @@
 import { SVG, Timeline, Svg } from "@svgdotjs/svg.js";
 const IMPOSSIBLE = [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0];
+const GOAL_ORDINAL = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0, 15];
+
 let currentState = [];
 const DIRECTIONS = {
   l: { text: "left", id: "l", emoji: "⬅", key: 37 },
@@ -9,11 +11,6 @@ const DIRECTIONS = {
 };
 
 let board;
-
-function main() {
-  board = createBoard();
-  addKeyboardListeners();
-}
 
 function getXforMN(m, n) {
   return (index) => index % n;
@@ -110,7 +107,6 @@ function executeStep(currentState, step) {
 
 function tilePressed(index) {
   return (e) => {
-    console.log("tile pressed", index, e);
     const newSteps = calculateNextSteps(board, index);
     const newState = executeSteps(board, newSteps);
     console.log({ newState, newSteps });
@@ -253,8 +249,88 @@ function checkKey(e) {
     board.steps = [...board.steps, validDirection.id];
   }
 }
-main();
 
 function arraysEqual(a1, a2) {
   return JSON.stringify(a1) == JSON.stringify(a2);
 }
+
+function getValidShuffle(currentState = GOAL_ORDINAL) {
+  let newState = randomSwap(randomSwap(currentState));
+  console.log({newState});
+  const originalSolvability = isSolvableToOriginal(currentState);
+  while(isSolvableToOriginal(newState)!==originalSolvability ){
+    newState = randomSwap(currentState);
+  console.log({newState});
+
+  }
+  return newState;
+}
+
+/* New array with random swapped elements. */
+function randomSwap(arr) {
+  const a = getRandomInt(0, arr.length);
+  let b = a;
+  while (b === a) {
+    b = getRandomInt(0, arr.length);
+  }
+  const newArr = [...arr];
+  newArr[a] = newArr[b];
+  newArr[b] = arr[a];
+  return newArr;
+}
+
+function calculateHeuristic(objectiveState, currentState) {
+  let h = 0;
+  currentState.forEach((e, i) => {});
+  return h;
+}
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
+function prepareShuffleControl() {
+  document.getElementById("shuffle").addEventListener(
+    "click",
+    () => {
+      console.log("Shuffle");
+
+      const newState = getValidShuffle(board.currentState);
+      animateToNewState(newState).play();
+      board.currentState = newState;
+    },
+    false
+  );
+}
+
+function getInversionCount(state) {
+  //TODO: find O(nLogn) solution
+  let count = 0;
+  for (let i = 0; i < state.length - 1; i++) {
+    const ti = state[i];
+    for (let j = i + 1; j < state.length; j++) {
+      const tj = state[j];
+      if (ti && tj && ti > tj) {
+        count++;
+      }
+    }
+  }
+  return count;
+}
+
+function isSolvableToOriginal(state) {
+  const inversionCount = getInversionCount(state);
+  // As puzzle15 is 4x4, the pos of the empty cell matters.
+  const zeroTilePosition = state.indexOf(0);
+  // xor
+  return !!((Math.floor(zeroTilePosition / 4)& 1) ^ (inversionCount & 1));
+}
+
+function main() {
+  board = createBoard();
+  addKeyboardListeners();
+  prepareShuffleControl();
+  console.log({ getValidShuffle, calculateHeuristic });
+}
+
+main();
